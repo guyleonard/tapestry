@@ -166,25 +166,26 @@ class Contig:
 
     # modified to rectify the AttributeError: 'list' object has no attribute 'search' error
     # seems to be caused by a single telomere rather than a list of multiple
+    # .instances attribute was deprecated, changed to .alignment.sequences instead
     def num_telomeres(self):
         start_matches = end_matches = 0
         if self.telomeres:
             for t in self.telomeres:
                 for s in (t, t.reverse_complement()):
-                    # Check if `s.instances` is a list, iterate if needed
-                    if isinstance(s.instances, list):
-                        for instance in s.instances:
-                            # Assuming `instance` can perform `.search` on a string
-                            start_matches += len(list(instance.search(self.rec[:1000].seq)))
-                            end_matches += len(list(instance.search(self.rec[-1000:].seq)))
+                    # Use the new alignment.sequences attribute instead of instances
+                    if hasattr(s, 'alignment') and hasattr(s.alignment, 'sequences'):
+                        for sequence in s.alignment.sequences:
+                            # Assuming sequence can perform .search on a string
+                            start_matches += len(list(sequence.search(self.rec[:1000].seq)))
+                            end_matches += len(list(sequence.search(self.rec[-1000:].seq)))
                     else:
-                        # If `s` is directly searchable as a sequence (string)
+                        # if s is directly searchable as a sequence (string)
                         start_matches += self.rec[:1000].seq.count(str(s))
                         end_matches += self.rec[-1000:].seq.count(str(s))
-        return start_matches, end_matches
+    return start_matches, end_matches
 
 
-    def get_contig_alignments(self):
+def get_contig_alignments(self):
         alignments = IntervalTree()
         alignments_by_contig = defaultdict(IntervalTree)
         alignments[1:len(self)] = (self.name, 1, len(self))
