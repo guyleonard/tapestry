@@ -185,7 +185,7 @@ class Contig:
     return start_matches, end_matches
 
 
-def get_contig_alignments(self):
+    def get_contig_alignments(self):
         alignments = IntervalTree()
         alignments_by_contig = defaultdict(IntervalTree)
         alignments[1:len(self)] = (self.name, 1, len(self))
