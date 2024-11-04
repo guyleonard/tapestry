@@ -164,13 +164,23 @@ class Contig:
         return mean_start_overhang, mean_end_overhang
 
 
+    # modified to rectify the AttributeError: 'list' object has no attribute 'search' error
+    # seems to be caused by a single telomere rather than a list of multiple
     def num_telomeres(self):
         start_matches = end_matches = 0
         if self.telomeres:
             for t in self.telomeres:
-                for s in t, t.reverse_complement():
-                    start_matches += len(list(s.instances.search(self.rec[:1000].seq)))
-                    end_matches   += len(list(s.instances.search(self.rec[-1000:].seq)))
+                for s in (t, t.reverse_complement()):
+                    # Check if `s.instances` is a list, iterate if needed
+                    if isinstance(s.instances, list):
+                        for instance in s.instances:
+                            # Assuming `instance` can perform `.search` on a string
+                            start_matches += len(list(instance.search(self.rec[:1000].seq)))
+                            end_matches += len(list(instance.search(self.rec[-1000:].seq)))
+                    else:
+                        # If `s` is directly searchable as a sequence (string)
+                        start_matches += self.rec[:1000].seq.count(str(s))
+                        end_matches += self.rec[-1000:].seq.count(str(s))
         return start_matches, end_matches
 
 
