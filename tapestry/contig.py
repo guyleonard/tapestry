@@ -182,7 +182,7 @@ class Contig:
                         # if s is directly searchable as a sequence (string)
                         start_matches += self.rec[:1000].seq.count(str(s))
                         end_matches += self.rec[-1000:].seq.count(str(s))
-    return start_matches, end_matches
+      return start_matches, end_matches
 
 
     def get_contig_alignments(self):
