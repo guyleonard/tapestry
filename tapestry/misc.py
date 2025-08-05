@@ -195,3 +195,4 @@ def include_file(filename):
             return f.read()
     except (OSError, IOError) as e:
         log.error(f"Could not include file '{filename}' in report: {e}")
+             
