@@ -125,7 +125,7 @@ class Contig:
         self.read_alignments = self.plot_read_alignments()
 
         # Alignments work is done; they cannot be pickled, so clean up before return
-        del(self.alignments)
+        self.alignments = None
 
     def completeness(self):
         completeness = ''
@@ -157,6 +157,8 @@ class Contig:
 
 
     def get_read_overhangs(self):
+        if self.alignments is None:
+            return None, None
 
         aligned_length = min(20000, len(self)*0.9)
         start_overhangs = self.alignments.get_start_overhangs(self.name, 1, min(2000, len(self)), aligned_length)
@@ -193,6 +195,10 @@ class Contig:
         alignments = IntervalTree()
         alignments_by_contig = defaultdict(IntervalTree)
         alignments[1:len(self)] = (self.name, 1, len(self))
+
+        if self.alignments is None:
+            return alignments, defaultdict(int)
+
         for self_start, self_end, contig, contig_start, contig_end in self.alignments.contig_alignments(self.name):
             alignments[self_start:self_end+1] = (contig, contig_start, contig_end)
             alignments_by_contig[contig][self_start:self_end+1] = 1
@@ -269,8 +275,8 @@ class Contig:
 
     def plot_read_alignments(self):
         read_alignments = []
-        
-        if not self.readoutput or self.alignments.read_alignments(self.name) is None:
+        if (not self.readoutput or self.alignments is None or
+                self.alignments.read_alignments(self.name) is None):
             return read_alignments
 
         plot_row_ends = []
