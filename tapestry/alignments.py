@@ -226,7 +226,6 @@ class Alignments():
             
                     chunk_count += 1
                     if chunk_count == 1000:
-                        ids = list(map(lambda x: x['id'], alignment_chunk))
                         conn.execute(self.alignments.insert(), alignment_chunk)
                         chunk_count = 0
                         alignment_chunk = []
