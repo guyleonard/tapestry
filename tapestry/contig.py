@@ -27,11 +27,15 @@
 # SOFTWARE.
 
 
-import os, re, warnings
+import os
+import re
+import warnings
+from collections import Counter
+from collections import defaultdict
 from statistics import mean
-from collections import Counter, defaultdict
 
-from intervaltree import Interval, IntervalTree
+from intervaltree import Interval
+from intervaltree import IntervalTree
 
 from .alignments import Alignments
 
@@ -182,7 +186,7 @@ class Contig:
                         # if s is directly searchable as a sequence (string)
                         start_matches += self.rec[:1000].seq.count(str(s))
                         end_matches += self.rec[-1000:].seq.count(str(s))
-      return start_matches, end_matches
+        return start_matches, end_matches
 
 
     def get_contig_alignments(self):
