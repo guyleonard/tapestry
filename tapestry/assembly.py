@@ -27,27 +27,40 @@
 # SOFTWARE.
 
 
-import os, sys, json, datetime
+import datetime
+import json
+import os
+import sys
 import logging as log
-
-from multiprocessing import Pool
-from functools import partial
-from statistics import mean, median
 from collections import defaultdict
+from functools import partial
 from gzip import open as gzopen
-from tqdm import tqdm
 from math import log10
+from multiprocessing import Pool
+from statistics import mean
+from statistics import median
 
-from Bio import SeqIO, motifs
+from Bio import SeqIO
+from Bio import motifs
 from Bio.Seq import Seq
 from Bio.SeqIO.QualityIO import FastqGeneralIterator
+from jinja2 import Environment
+from jinja2 import FileSystemLoader
+from tqdm import tqdm
 
-from jinja2 import Environment, FileSystemLoader
-
-from .contig import Contig, process_contig, get_ploidy
 from .alignments import Alignments
-from .misc import cached_property, setup_output, include_file, report_folder, tapestry_tqdm, file_exists, is_gz_file
-from .misc import minimap2, samtools
+from .contig import Contig
+from .contig import get_ploidy
+from .contig import process_contig
+from .misc import cached_property
+from .misc import file_exists
+from .misc import include_file
+from .misc import is_gz_file
+from .misc import minimap2
+from .misc import report_folder
+from .misc import samtools
+from .misc import setup_output
+from .misc import tapestry_tqdm
 from ._version import __version__
 
 filenames = {

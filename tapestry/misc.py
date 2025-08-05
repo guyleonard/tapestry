@@ -27,14 +27,24 @@
 # SOFTWARE.
 
 
-from ._version import __version__
-
-import os, sys, argparse, itertools, errno, io, binascii, pkg_resources
+import argparse
+import binascii
+import errno
+import io
+import itertools
 import logging as log
-from functools import partial, lru_cache
-from tqdm import tqdm
+import os
+import sys
+from functools import lru_cache
+from functools import partial
+
+import pkg_resources
 from Bio import SeqIO
-from plumbum import local, CommandNotFound
+from plumbum import CommandNotFound
+from plumbum import local
+from tqdm import tqdm
+
+from ._version import __version__
 
 failed = []
 tools = {'minimap2':'minimap2', 
