@@ -71,7 +71,10 @@ report_folder = pkg_resources.resource_filename(__name__, 'report')
 
 tapestry_tqdm = partial(tqdm, unit=" contig", leave=False, miniters=1, dynamic_ncols=True)
 
-def get_args(arglist=[], description="", scriptargs=[]):
+
+def get_args(arglist=None, description="", scriptargs=None):
+    arglist = arglist or []
+    scriptargs = scriptargs or []
 
     parser = argparse.ArgumentParser(description=description)
     for scriptarg in scriptargs:
@@ -96,8 +99,9 @@ def get_args(arglist=[], description="", scriptargs=[]):
     return args
 
 
-def get_weave_args(arglist=[]):
-    args = get_args(arglist, 
+def get_weave_args(arglist=None):
+    arglist = arglist or []
+    args = get_args(arglist,
            "weave: assess quality of one genome assembly",
            ["'-a', '--assembly', help='filename of assembly in FASTA format (required)', type=str, required=True",
             "'-r', '--reads', help='filename of long reads in FASTQ format (required; must be gzipped)', type=str, required=True",
@@ -123,8 +127,9 @@ def get_weave_args(arglist=[]):
 
     return args
 
-
-def weave_welcome(arglist=[]):
+ 
+def weave_welcome(arglist=None):
+    arglist = arglist or []
     versions()
     
     print("\nWelcome to Tapestry!\n")
@@ -173,8 +178,9 @@ def setup_output(outdir):
             raise
 
 
-def file_exists(filename, deps=[]):
-    return (os.path.exists(filename) and 
+def file_exists(filename, deps=None):
+    deps = deps or []
+    return (os.path.exists(filename) and
              all([os.stat(filename).st_mtime > os.stat(dep).st_mtime for dep in deps])
            )
 
