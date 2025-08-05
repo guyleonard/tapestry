@@ -146,8 +146,9 @@ class Alignments():
 
                 conn.execute(self.contigs.insert(), contig_rows)
                 conn.execute(self.ranges.insert(), ranges_rows)
-        except:
-            log.error(f"Failed to add assembly to alignments database {self.db_filename}")
+        except Exception as e:
+            log.error(f"Failed to add assembly to alignments database {self.db_filename}: {e}")
+            raise
 
 
     def load_alignments(self, bam_filename, query_type=None, min_contig_alignment=None):
@@ -238,8 +239,9 @@ class Alignments():
                 if reads_chunk:
                     conn.execute(self.reads.insert(), reads_chunk)
 
-        except:
-            log.error(f"Failed to add {query_type} alignments to database {self.db_filename}")
+        except Exception as e:
+            log.error(f"Failed to add {query_type} alignments to database {self.db_filename}: {e}")
+            raise
 
 
     def get_alignment_type(self, aln):

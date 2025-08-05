@@ -34,7 +34,6 @@ import io
 import itertools
 import logging as log
 import os
-import sys
 from functools import cached_property, partial
 
 import pkg_resources
@@ -62,9 +61,12 @@ for tool in tools:
 if failed:
     dep = 'dependency' if len(failed)==1 else 'dependencies'
     itthey = 'it is' if len(failed)==1 else 'they are'
-    print(f"Tapestry can't find the following {dep}. Please check {itthey} installed and try again.")
-    print('\n'.join(failed))
-    sys.exit()
+    message = (
+        f"Tapestry can't find the following {dep}. Please check {itthey} installed and try again.\n"
+        + '\n'.join(failed)
+    )
+    log.error(message)
+    raise RuntimeError(message)
 
 
 report_folder = pkg_resources.resource_filename(__name__, 'report')
@@ -86,7 +88,7 @@ def get_args(arglist=None, description="", scriptargs=None):
     # If no arguments, print usage message
     if not arglist:
         parser.print_help()
-        sys.exit()
+        raise ValueError("No arguments provided")
 
     args = parser.parse_args(arglist)
 
@@ -94,7 +96,7 @@ def get_args(arglist=None, description="", scriptargs=None):
 
     if args.cores < 1:
         log.error("Please specify at least one core")
-        sys.exit()
+        raise ValueError("Please specify at least one core")
 
     return args
 
@@ -114,16 +116,19 @@ def get_weave_args(arglist=None):
             "'-o', '--output', help='directory to write output, default weave_output', type=str, default='weave_output'"])
 
     if not file_exists(args.assembly):
-        log.error(f"Assembly file {args.assembly} does not exist")
-        sys.exit()
+        msg = f"Assembly file {args.assembly} does not exist"
+        log.error(msg)
+        raise FileNotFoundError(msg)
 
     if not file_exists(args.reads):
-        log.error(f"Reads file {args.reads} does not exist")
-        sys.exit()
+        msg = f"Reads file {args.reads} does not exist"
+        log.error(msg)
+        raise FileNotFoundError(msg)
 
     if not is_gz_file(args.reads):
-        log.error(f"Reads file {args.reads} must be gzipped")
-        sys.exit()
+        msg = f"Reads file {args.reads} must be gzipped"
+        log.error(msg)
+        raise ValueError(msg)
 
     return args
 

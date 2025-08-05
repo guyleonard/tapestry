@@ -30,7 +30,6 @@
 import datetime
 import json
 import os
-import sys
 import logging as log
 from collections import defaultdict
 from functools import cached_property, partial
@@ -211,12 +210,13 @@ class Assembly():
             assembly_in.close()
 
             if len(contigs) == 0:
-                log.error(f"Could not load any contigs from {self.assemblyfile}. Is this a valid FASTA file?")
-                sys.exit()
+                msg = f"Could not load any contigs from {self.assemblyfile}. Is this a valid FASTA file?"
+                log.error(msg)
+                raise RuntimeError(msg)
 
-        except IOError:
-            log.error(f"Can't load assembly from file {self.assemblyfile}!")
-            sys.exit()
+        except IOError as e:
+            log.error(f"Can't load assembly from file {self.assemblyfile}! {e}")
+            raise
 
         log.info(f"Loaded {len(contigs)} contigs from {self.assemblyfile}")
         # Add dictionary of contig IDs to every contig
@@ -284,8 +284,7 @@ class Assembly():
                              f"-m{self.min_contig_alignment*0.9}", f"-s{self.min_contig_alignment*0.9}", \
                              "-a", f"-t{self.cores}", self.filenames['assembly'], inputfile]
         else:
-            log.error(f"Don't know how to align {aligntype}")
-            sys.exit()
+            raise ValueError(f"Don't know how to align {aligntype}")
 
         # samtools uses cores-1 because -@ specifies additional cores and defaults to 0
         align = align | samtools["sort", f"-@{self.cores-1}", f"-o{bam_filename}"]
@@ -293,9 +292,9 @@ class Assembly():
 
         try:
             align()
-        except:
-            log.error(f"Failed to align {inputfile} to {self.filenames['assembly']}")
-            sys.exit()
+        except Exception as e:
+            log.error(f"Failed to align {inputfile} to {self.filenames['assembly']}: {e}")
+            raise
 
 
     def index_bam(self, aligntype):
@@ -307,8 +306,9 @@ class Assembly():
             try:
                 log.info(f"Indexing {bam_filename}")
                 samtools("index", f"-@{self.cores-1}", bam_filename)
-            except:
-                log.error(f"Failed to index {bam_filename}")
+            except Exception as e:
+                log.error(f"Failed to index {bam_filename}: {e}")
+                raise
 
 
     def align_to_assembly(self, aligntype):
