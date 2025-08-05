@@ -35,8 +35,7 @@ import itertools
 import logging as log
 import os
 import sys
-from functools import lru_cache
-from functools import partial
+from functools import cached_property, partial
 
 import pkg_resources
 from Bio import SeqIO
@@ -183,10 +182,6 @@ def file_exists(filename, deps=[]):
 def is_gz_file(filepath):
     with open(filepath, 'rb') as test_f:
         return binascii.hexlify(test_f.read(2)) == b'1f8b'
-
-
-def cached_property(function):
-    return property(lru_cache()(function))
 
 
 def include_file(filename):

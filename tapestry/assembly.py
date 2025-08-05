@@ -33,7 +33,7 @@ import os
 import sys
 import logging as log
 from collections import defaultdict
-from functools import partial
+from functools import cached_property, partial
 from gzip import open as gzopen
 from math import log10
 from multiprocessing import Pool
@@ -52,7 +52,6 @@ from .alignments import Alignments
 from .contig import Contig
 from .contig import get_ploidy
 from .contig import process_contig
-from .misc import cached_property
 from .misc import file_exists
 from .misc import include_file
 from .misc import is_gz_file
